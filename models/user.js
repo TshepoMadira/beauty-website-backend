@@ -5,16 +5,22 @@ const jwt = require('jsonwebtoken');
 const UserSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: [true, 'Please add a first name']
+    required: [true, 'Please add a first name'],
+    trim: true,
+    maxlength: [50, 'First name cannot be more than 50 characters']
   },
   lastName: {
     type: String,
-    required: [true, 'Please add a last name']
+    required: [true, 'Please add a last name'],
+    trim: true,
+    maxlength: [50, 'Last name cannot be more than 50 characters']
   },
   email: {
     type: String,
     required: [true, 'Please add an email'],
     unique: true,
+    trim: true,
+    lowercase: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       'Please add a valid email'
@@ -22,13 +28,24 @@ const UserSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: [true, 'Please add a phone number']
+    required: [true, 'Please add a phone number'],
+    match: [
+      /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
+      'Please add a valid phone number'
+    ]
   },
   password: {
     type: String,
     required: [true, 'Please add a password'],
-    minlength: 6,
-    select: false
+    minlength: [6, 'Password must be at least 6 characters'],
+    select: false,
+    // You can add more complex password requirements
+    validate: {
+      validator: function(v) {
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/.test(v);
+      },
+      message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    }
   },
   createdAt: {
     type: Date,

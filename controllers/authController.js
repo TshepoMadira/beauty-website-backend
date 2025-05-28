@@ -8,7 +8,13 @@ const asyncHandler = require('../middleware/async');
 exports.register = asyncHandler(async (req, res, next) => {
   const { firstName, lastName, email, phone, password } = req.body;
 
-  // Create user
+  // Check if user already exists
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return next(new ErrorResponse('Email already in use', 400));
+  }
+
+  // Create user if email is unique
   const user = await User.create({
     firstName,
     lastName,
