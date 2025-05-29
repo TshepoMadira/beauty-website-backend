@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const errorHandler = require('./middleware/error'); // ✅ Import this
 
 const app = express();
 
@@ -19,7 +20,10 @@ app.get('/', (req, res) => {
 });
 
 // Routes
-app.use('/api/auth', require('./routes/authRoutes')); // Use only one consistent route
+app.use('/api/auth', require('./routes/authRoutes'));
+
+// ✅ Add this AFTER routes
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
